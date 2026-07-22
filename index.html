@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>El Silencio Que Aprendió a Abrazar — Novela por Andre</title>
+    <meta name="description" content="Una experiencia de lectura inmersiva y romántica. Una carta extensa sobre encontrar paz, amor y la belleza de elegirse todos los días.">
+    
+    <!-- Google Fonts for Editorial Romance Aesthetics -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Alex+Brush&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Discrete Top Progress Bar -->
+    <div id="progress-bar-container" class="progress-container">
+        <div id="progress-bar" class="progress-bar"></div>
+    </div>
+
+    <!-- Main Header & Controls -->
+    <header class="app-header" id="app-header">
+        <div class="header-left">
+            <button id="btn-toc" class="btn-icon" title="Índice de capítulos" aria-label="Abrir Índice">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+                <span class="btn-text">Índice</span>
+            </button>
+            <button id="btn-bookmark" class="btn-icon" title="Guardar marcapáginas" aria-label="Guardar punto de lectura">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span class="btn-text">Marcapáginas</span>
+            </button>
+        </div>
+
+        <div class="header-center">
+            <span class="header-title" id="header-book-title">El Silencio Que Aprendió a Abrazar</span>
+        </div>
+
+        <div class="header-right">
+            <!-- Font Control Buttons -->
+            <div class="font-controls">
+                <button id="btn-font-dec" class="btn-icon-sm" title="Reducir letra" aria-label="Reducir tamaño de letra">A-</button>
+                <button id="btn-font-reset" class="btn-icon-sm" title="Restablecer letra" aria-label="Restablecer letra">100%</button>
+                <button id="btn-font-inc" class="btn-icon-sm" title="Aumentar letra" aria-label="Aumentar tamaño de letra">A+</button>
+            </div>
+
+            <!-- Dark / Light Theme Toggle -->
+            <button id="btn-theme" class="btn-icon" title="Cambiar tema" aria-label="Cambiar tema de luz u obscuridad">
+                <svg id="icon-sun" class="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                <svg id="icon-moon" class="theme-icon hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+
+            <!-- Distraction Free Reading Mode -->
+            <button id="btn-reading-mode" class="btn-icon" title="Modo Lectura" aria-label="Activar Modo Lectura">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Table of Contents Sidebar / Modal -->
+    <aside id="toc-drawer" class="toc-drawer" aria-hidden="true">
+        <div class="toc-header">
+            <h3>Índice del Libro</h3>
+            <button id="btn-close-toc" class="btn-close" aria-label="Cerrar índice">&times;</button>
+        </div>
+        <div class="toc-body">
+            <div class="toc-meta">
+                <p class="toc-author">Andre</p>
+                <p class="toc-date">26 de Junio</p>
+            </div>
+            <nav id="toc-list" class="toc-list"></nav>
+        </div>
+    </aside>
+    <div id="toc-overlay" class="toc-overlay"></div>
+
+    <!-- Exit Distraction-Free Reading Mode Floating Button -->
+    <button id="btn-exit-reading" class="btn-floating-exit hidden" title="Salir de Modo Lectura">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"></path>
+        </svg>
+        <span>Mostrar Controles</span>
+    </button>
+
+    <!-- Toast Notification Container -->
+    <div id="toast" class="toast hidden"></div>
+
+    <!-- MAIN IMMERSIVE STAGE -->
+    <main class="stage-container" id="stage-container">
+        
+        <!-- 3D BOOK STAGE -->
+        <div id="book-3d-wrapper" class="book-3d-wrapper state-closed">
+            
+            <!-- BOOK CONTAINER -->
+            <div id="book-container" class="book-container">
+
+                <!-- FRONT COVER (3D FLIPPING SHEET) -->
+                <div id="book-cover" class="book-cover-3d">
+                    <div class="cover-front">
+                        <div class="cover-background" style="background-image: url('assets/cover.jpg');"></div>
+                        <div class="cover-overlay"></div>
+                        <div class="cover-content">
+                            <div class="cover-header">
+                                <span class="cover-ornament">✦ ✦ ✦</span>
+                                <span class="cover-date-badge">26 de Junio</span>
+                            </div>
+                            <div class="cover-title-group">
+                                <h1 class="cover-title">El Silencio Que Aprendió a Abrazar</h1>
+                                <p class="cover-subtitle">Una historia sobre encontrar paz en medio del ruido y elegirse todos los días</p>
+                            </div>
+                            <div class="cover-footer">
+                                <span class="cover-author">Andre</span>
+                                <button id="btn-start-reading" class="btn-start-reading">
+                                    <span>Comenzar a Leer</span>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cover-back">
+                        <!-- Inside left lining texture of book cover -->
+                        <div class="inner-cover-lining">
+                            <div class="lining-pattern"></div>
+                            <div class="lining-quote">
+                                <p>"No llegaste haciendo ruido, ni prometiendo cambiar mi mundo. Simplemente llegaste siendo tú. Creo que eso fue suficiente."</p>
+                                <span>— Andre</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOOK PAGES SHELL -->
+                <div id="book-pages-shell" class="book-pages-shell">
+                    
+                    <!-- LEFT PAGE / DECORATIVE PAGE (Desktop / Tablet dual layout or single container) -->
+                    <div class="book-page page-left" id="page-left">
+                        <div class="page-header-meta">
+                            <span class="chapter-tag" id="left-chapter-tag">Capítulo I</span>
+                        </div>
+                        <div class="page-content-wrapper" id="left-content">
+                            <!-- Injected dynamically -->
+                        </div>
+                        <div class="page-footer-meta">
+                            <span class="page-num" id="left-page-num"></span>
+                        </div>
+                    </div>
+
+                    <!-- CENTER SPINE & PAGE SHADOW -->
+                    <div class="book-spine-line"></div>
+
+                    <!-- RIGHT PAGE / MAIN ACTIVE PAGE -->
+                    <div class="book-page page-right" id="page-right">
+                        <div class="page-header-meta">
+                            <span class="chapter-tag" id="right-chapter-tag">Capítulo I</span>
+                        </div>
+                        <div class="page-content-wrapper" id="right-content">
+                            <!-- Injected dynamically -->
+                        </div>
+                        <div class="page-footer-meta">
+                            <span class="page-num" id="right-page-num">Página 1</span>
+                        </div>
+                    </div>
+
+                    <!-- ANIMATING FLIP SHEET FOR DYNAMIC PAGE TURNS -->
+                    <div id="flip-sheet" class="flip-sheet">
+                        <div class="flip-sheet-front" id="flip-front"></div>
+                        <div class="flip-sheet-back" id="flip-back"></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER NAVIGATION CONTROLS -->
+    <footer class="app-footer" id="app-footer">
+        <div class="footer-nav">
+            <button id="btn-first" class="btn-nav-icon" title="Ir al inicio" aria-label="Ir al inicio del libro">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="11 17 6 12 11 7"></polyline>
+                    <polyline points="18 17 13 12 18 7"></polyline>
+                </svg>
+            </button>
+            <button id="btn-prev" class="btn-nav" aria-label="Página anterior">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+                <span>Anterior</span>
+            </button>
+
+            <div class="page-counter-badge">
+                <span id="current-page-display">Página 1</span>
+                <span class="counter-sep">de</span>
+                <span id="total-pages-display">141</span>
+            </div>
+
+            <button id="btn-next" class="btn-nav btn-nav-primary" aria-label="Página siguiente">
+                <span>Siguiente</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 18l6-6-6-6"/>
+                </svg>
+            </button>
+            <button id="btn-last" class="btn-nav-icon" title="Ir al final" aria-label="Ir al final del libro">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="13 17 18 12 13 7"></polyline>
+                    <polyline points="6 17 11 12 6 7"></polyline>
+                </svg>
+            </button>
+        </div>
+    </footer>
+
+    <!-- Load Book Content Script & Main Script -->
+    <script src="book-data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
