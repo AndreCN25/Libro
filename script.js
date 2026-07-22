@@ -1,7 +1,7 @@
 /**
  * Romantic Digital Book Reader Engine
  * Pure Vanilla JavaScript — HTML5, CSS3, Vanilla JS
- * Optimized for iOS Safari & Android Chrome with Zero-Scroll Page Partitioning
+ * Optimized for iOS Safari & Android Chrome with Dedicated Chapter Title Pages & Zero-Scroll Layout
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -236,7 +236,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!pageData) return '';
         
         let html = '';
-        if (pageData.isChapterStart) {
+        
+        // Dedicated standalone Chapter Cover page
+        if (pageData.isChapterTitlePage) {
             const ch = BOOK_METADATA.chapters.find(c => c.num === pageData.chapter);
             if (ch) {
                 html += `
@@ -247,6 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
             }
+            return html;
         }
 
         const paragraphs = pageData.content.split('\n\n');
