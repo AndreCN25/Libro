@@ -1,7 +1,7 @@
 /**
  * Romantic Digital Book Reader Engine
  * Pure Vanilla JavaScript — HTML5, CSS3, Vanilla JS
- * Optimized for iOS Safari & Android Chrome with Ultra-Fluid Page Turning & Auto-Scroll Reset
+ * Optimized for iOS Safari & Android Chrome with Zero-Scroll Page Partitioning
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -158,14 +158,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getCurrentChapter(pageNum) {
-        let ch = BOOK_METADATA.chapters[0];
-        for (let i = BOOK_METADATA.chapters.length - 1; i >= 0; i--) {
-            if (pageNum >= BOOK_METADATA.chapters[i].startPage) {
-                ch = BOOK_METADATA.chapters[i];
-                break;
-            }
-        }
-        return ch;
+        const pageData = BOOK_PAGES[pageNum - 1];
+        const cnum = pageData ? pageData.chapter : 1;
+        return BOOK_METADATA.chapters.find(c => c.num === cnum) || BOOK_METADATA.chapters[0];
     }
 
     // --- Toast Notifications ---
@@ -240,17 +235,18 @@ document.addEventListener('DOMContentLoaded', () => {
     function formatPageContent(pageData) {
         if (!pageData) return '';
         
-        const ch = BOOK_METADATA.chapters.find(c => c.startPage === pageData.pageNumber);
-        
         let html = '';
-        if (ch) {
-            html += `
-                <div class="chapter-break-wrapper">
-                    <div class="chapter-number-script">Capítulo ${ch.num}</div>
-                    <h2 class="chapter-break-title">${ch.title.replace(/^Capítulo [I|V|X]+:\s*/, '')}</h2>
-                    <div class="chapter-divider-ornament"></div>
-                </div>
-            `;
+        if (pageData.isChapterStart) {
+            const ch = BOOK_METADATA.chapters.find(c => c.num === pageData.chapter);
+            if (ch) {
+                html += `
+                    <div class="chapter-break-wrapper">
+                        <div class="chapter-number-script">Capítulo ${ch.num}</div>
+                        <h2 class="chapter-break-title">${ch.title.replace(/^Capítulo [I|V|X]+:\s*/, '')}</h2>
+                        <div class="chapter-divider-ornament"></div>
+                    </div>
+                `;
+            }
         }
 
         const paragraphs = pageData.content.split('\n\n');
