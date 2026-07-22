@@ -1,7 +1,7 @@
 /**
  * Romantic Digital Book Reader Engine
  * Pure Vanilla JavaScript — HTML5, CSS3, Vanilla JS
- * Optimized for iOS Safari & Android Chrome with Ultra-Fluid Page Turning
+ * Optimized for iOS Safari & Android Chrome with Ultra-Fluid Page Turning & Auto-Scroll Reset
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -229,6 +229,10 @@ document.addEventListener('DOMContentLoaded', () => {
             rightContent.innerHTML = formatPageContent(pageData);
         }
 
+        // RESET SCROLL POSITION TO TOP ON PAGE CHANGE
+        rightContent.scrollTop = 0;
+        leftContent.scrollTop = 0;
+
         // Auto-save current progress in LocalStorage
         localStorage.setItem('romantic_book_page', pageNum);
     }
@@ -260,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return html;
     }
 
-    // --- Ultra-Fluid Page Turning (Zero Flicker / Frame Jump Fix) ---
+    // --- Ultra-Fluid Page Turning (Zero Flicker & Auto-Scroll Reset) ---
     function flipToNextPage() {
         if (currentPage >= totalPages || isAnimating) return;
         if (!isBookOpen) {
@@ -273,10 +277,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 1. Prepare flip sheet front with current right page content
         flipFront.innerHTML = rightContent.innerHTML;
+        flipFront.scrollTop = rightContent.scrollTop;
+
         // 2. Prepare flip sheet back with target page content
         flipBack.innerHTML = formatPageContent(BOOK_PAGES[nextPage - 1]);
+        flipBack.scrollTop = 0;
 
-        // 3. Immediately render the destination page underneath the flip sheet
+        // 3. Immediately render the destination page underneath the flip sheet (resets scroll)
         renderPages(nextPage);
 
         // 4. Trigger smooth hardware accelerated 3D turn
@@ -299,10 +306,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 1. Prepare flip sheet front with destination previous page content
         flipFront.innerHTML = formatPageContent(BOOK_PAGES[prevPage - 1]);
+        flipFront.scrollTop = 0;
+
         // 2. Prepare flip sheet back with current right page content
         flipBack.innerHTML = rightContent.innerHTML;
+        flipBack.scrollTop = rightContent.scrollTop;
 
-        // 3. Immediately render the destination previous page underneath
+        // 3. Immediately render the destination previous page underneath (resets scroll)
         renderPages(prevPage);
 
         // 4. Trigger smooth backward turn animation
@@ -429,12 +439,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const deltaX = touchEndX - touchStartX;
             const deltaY = touchEndY - touchStartY;
             
-            // Only trigger if horizontal swipe is dominant and sufficiently long
             if (Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
                 if (deltaX < 0) {
-                    flipToNextPage(); // Swipe Left -> Next Page
+                    flipToNextPage();
                 } else {
-                    flipToPrevPage(); // Swipe Right -> Prev Page
+                    flipToPrevPage();
                 }
             }
         }
