@@ -1,6 +1,7 @@
 /**
  * Romantic Digital Book Reader Engine
  * Pure Vanilla JavaScript — HTML5, CSS3, Vanilla JS
+ * Optimized for iOS Safari & Android Chrome with Ultra-Fluid Page Turning
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -11,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let isAnimating = false;
     let fontScale = 1.0;
     let theme = 'light';
-    let isReadingMode = false;
 
     // --- DOM Elements ---
     const book3DWrapper = document.getElementById('book-3d-wrapper');
@@ -83,13 +83,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- LocalStorage & Settings ---
     function loadSavedSettings() {
-        // Theme
         const savedTheme = localStorage.getItem('romantic_book_theme');
         if (savedTheme) {
             setTheme(savedTheme);
         }
 
-        // Font scale
         const savedFontScale = parseFloat(localStorage.getItem('romantic_book_font_scale'));
         if (savedFontScale) {
             setFontScale(savedFontScale);
@@ -201,7 +199,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentCh = getCurrentChapter(pageNum);
 
         if (isDualView) {
-            // Left page shows previous page if available, or title lining
             if (pageNum > 1) {
                 const prevPageData = BOOK_PAGES[pageNum - 2];
                 const prevCh = getCurrentChapter(pageNum - 1);
@@ -209,7 +206,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 leftPageNum.textContent = `Página ${pageNum - 1}`;
                 leftContent.innerHTML = formatPageContent(prevPageData);
             } else {
-                // Page 1: Left page shows inner title header
                 leftChapterTag.textContent = "Edición Especial";
                 leftPageNum.textContent = "";
                 leftContent.innerHTML = `
@@ -224,12 +220,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
             }
 
-            // Right page shows current page
             rightChapterTag.textContent = currentCh.title;
             rightPageNum.textContent = `Página ${pageNum}`;
             rightContent.innerHTML = formatPageContent(pageData);
         } else {
-            // Single page view (Mobile / Small Screen)
             rightChapterTag.textContent = currentCh.title;
             rightPageNum.textContent = `Página ${pageNum}`;
             rightContent.innerHTML = formatPageContent(pageData);
@@ -242,7 +236,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function formatPageContent(pageData) {
         if (!pageData) return '';
         
-        // Check if page is start of a chapter
         const ch = BOOK_METADATA.chapters.find(c => c.startPage === pageData.pageNumber);
         
         let html = '';
@@ -256,7 +249,6 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }
 
-        // Split text content into paragraphs
         const paragraphs = pageData.content.split('\n\n');
         paragraphs.forEach(p => {
             const cleanP = p.trim();
@@ -268,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return html;
     }
 
-    // --- Page Navigation with 3D Flip Physics ---
+    // --- Ultra-Fluid Page Turning (Zero Flicker / Frame Jump Fix) ---
     function flipToNextPage() {
         if (currentPage >= totalPages || isAnimating) return;
         if (!isBookOpen) {
@@ -279,19 +271,23 @@ document.addEventListener('DOMContentLoaded', () => {
         isAnimating = true;
         const nextPage = currentPage + 1;
 
-        // Prepare 3D flip animation sheet content
+        // 1. Prepare flip sheet front with current right page content
         flipFront.innerHTML = rightContent.innerHTML;
+        // 2. Prepare flip sheet back with target page content
         flipBack.innerHTML = formatPageContent(BOOK_PAGES[nextPage - 1]);
 
+        // 3. Immediately render the destination page underneath the flip sheet
+        renderPages(nextPage);
+
+        // 4. Trigger smooth hardware accelerated 3D turn
         flipSheet.className = 'flip-sheet animate-turn-forward';
 
         setTimeout(() => {
             currentPage = nextPage;
-            renderPages(currentPage);
             updateUI();
             flipSheet.className = 'flip-sheet';
             isAnimating = false;
-        }, 600);
+        }, 500);
     }
 
     function flipToPrevPage() {
@@ -301,18 +297,23 @@ document.addEventListener('DOMContentLoaded', () => {
         isAnimating = true;
         const prevPage = currentPage - 1;
 
+        // 1. Prepare flip sheet front with destination previous page content
         flipFront.innerHTML = formatPageContent(BOOK_PAGES[prevPage - 1]);
+        // 2. Prepare flip sheet back with current right page content
         flipBack.innerHTML = rightContent.innerHTML;
 
+        // 3. Immediately render the destination previous page underneath
+        renderPages(prevPage);
+
+        // 4. Trigger smooth backward turn animation
         flipSheet.className = 'flip-sheet animate-turn-backward';
 
         setTimeout(() => {
             currentPage = prevPage;
-            renderPages(currentPage);
             updateUI();
             flipSheet.className = 'flip-sheet';
             isAnimating = false;
-        }, 600);
+        }, 500);
     }
 
     function goToPage(targetPage) {
@@ -330,11 +331,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateUI() {
         currentPageDisplay.textContent = `Página ${currentPage}`;
         
-        // Progress bar percentage calculation
         const percent = Math.round((currentPage / totalPages) * 100);
         progressBar.style.width = `${percent}%`;
 
-        // Update nav button states
         btnPrev.disabled = (currentPage === 1);
         btnFirst.disabled = (currentPage === 1);
         btnNext.disabled = (currentPage === totalPages);
@@ -343,7 +342,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Event Listeners Attachment ---
     function attachEventListeners() {
-        // Book cover click or start button click
         btnStartReading.addEventListener('click', (e) => {
             e.stopPropagation();
             openBook();
@@ -353,34 +351,28 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!isBookOpen) openBook();
         });
 
-        // Navigation buttons
         btnNext.addEventListener('click', flipToNextPage);
         btnPrev.addEventListener('click', flipToPrevPage);
         btnFirst.addEventListener('click', () => goToPage(1));
         btnLast.addEventListener('click', () => goToPage(totalPages));
 
-        // Table of Contents
         btnToc.addEventListener('click', openToc);
         btnCloseToc.addEventListener('click', closeToc);
         tocOverlay.addEventListener('click', closeToc);
 
-        // Bookmark button
         btnBookmark.addEventListener('click', () => {
             localStorage.setItem('romantic_book_page', currentPage);
             showToast(`📍 Marcapáginas guardado en la Página ${currentPage}`);
         });
 
-        // Theme toggle
         btnTheme.addEventListener('click', () => {
             setTheme(theme === 'light' ? 'dark' : 'light');
         });
 
-        // Font scaling
         btnFontInc.addEventListener('click', () => setFontScale(fontScale + 0.1));
         btnFontDec.addEventListener('click', () => setFontScale(fontScale - 0.1));
         btnFontReset.addEventListener('click', () => setFontScale(1.0));
 
-        // Distraction-Free Reading Mode
         btnReadingMode.addEventListener('click', () => {
             document.body.classList.add('reading-mode');
             btnExitReading.classList.remove('hidden');
@@ -415,24 +407,31 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Touch Swipe Gestures for Mobile / Tablets
+        // Touch Swipe Gestures for Mobile (iOS & Android)
         let touchStartX = 0;
+        let touchStartY = 0;
         let touchEndX = 0;
+        let touchEndY = 0;
 
         const stage = document.getElementById('stage-container');
         stage.addEventListener('touchstart', (e) => {
             touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
         }, { passive: true });
 
         stage.addEventListener('touchend', (e) => {
             touchEndX = e.changedTouches[0].screenX;
+            touchEndY = e.changedTouches[0].screenY;
             handleSwipe();
         }, { passive: true });
 
         function handleSwipe() {
-            const swipeDistance = touchEndX - touchStartX;
-            if (Math.abs(swipeDistance) > 50) {
-                if (swipeDistance < 0) {
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            
+            // Only trigger if horizontal swipe is dominant and sufficiently long
+            if (Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+                if (deltaX < 0) {
                     flipToNextPage(); // Swipe Left -> Next Page
                 } else {
                     flipToPrevPage(); // Swipe Right -> Prev Page
@@ -440,7 +439,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Window resize event listener to adjust dual vs single page rendering
         window.addEventListener('resize', () => {
             if (isBookOpen) {
                 renderPages(currentPage);
